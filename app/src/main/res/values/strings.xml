@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Repeating Timer</string>
+    <string name="ad_unit_id">ca-app-pub-9540086841520699/1155932018</string>
+    <string name="ring_every">Ring every:</string>
+    <string name="start">start</string>
+    <string name="stop">stop</string>
+    <string name="_00_00_00">00:00:00</string>
+</resources>
