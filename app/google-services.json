@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "20471692921",
+    "project_id": "repeating-timer-57ff9",
+    "storage_bucket": "repeating-timer-57ff9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20471692921:android:df77eb19b5325a877ddea8",
+        "android_client_info": {
+          "package_name": "com.velocityappsdj.repeatingtimer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "20471692921-d5ajtr9qgehssvbjrgndpa6t679p882o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxbvpYjStBzMg_-yFmGZDnPxGcoB85rXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "20471692921-d5ajtr9qgehssvbjrgndpa6t679p882o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
