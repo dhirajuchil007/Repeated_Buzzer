@@ -1,21 +1,17 @@
 package com.velocityappsdj.repeatingtimer.services
 
-import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.os.Build
+import android.os.PowerManager
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -45,6 +41,7 @@ class TimerService : LifecycleService() {
     lateinit var currentNotificationBuilder: NotificationCompat.Builder
     lateinit var mediaPlayer: MediaPlayer
     lateinit var prefUtil: SharedPrefUtil
+    private lateinit var wakeLock: PowerManager.WakeLock
 
     companion object {
         var totalTimeSeconds = 0L
@@ -60,6 +57,10 @@ class TimerService : LifecycleService() {
         super.onCreate()
         prefUtil = SharedPrefUtil(this)
         postInitialValues()
+
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakelockTag")
+        wakeLock.acquire(10 * 60 * 1000L /*10 minutes*/)
 
     }
 
@@ -183,14 +184,22 @@ class TimerService : LifecycleService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
         Log.d(
             TAG,
             "onStartCommand() called with: intent = $intent, flags = $flags, startId = $startId"
         )
 
+
+
         intent?.let {
             when (it.action) {
                 ACTION_START_SERVICE -> {
+
+                    if (!wakeLock.isHeld) {
+                        wakeLock.acquire(10*60*1000L /*10 minutes*/)
+                    }
+
                     startForegroundService()
 
                     selectedUnit = it.getStringExtra(UNIT)
@@ -201,6 +210,10 @@ class TimerService : LifecycleService() {
 
                 ACTION_STOP_SERVICE -> {
 
+                    if (wakeLock.isHeld) {
+                        wakeLock.release()
+                    }
+
                     postInitialValues()
                     stopForeground(true)
                     stopSelf()
@@ -210,7 +223,10 @@ class TimerService : LifecycleService() {
                 }
             }
         }
-        return super.onStartCommand(intent, flags, startId)
+
+        super.onStartCommand(intent, flags, startId)
+
+        return START_STICKY
     }
 
     private fun setUpBuzzer() {
@@ -235,5 +251,12 @@ class TimerService : LifecycleService() {
                 }
             }
         })
+    }
+
+    override fun onDestroy() {
+        if (wakeLock.isHeld) {
+            wakeLock.release()
+        }
+        super.onDestroy()
     }
 }
