@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.velocityappsdj.repeatingtimer">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +14,7 @@
         android:theme="@style/Theme.RepeatedBuzzer">
         <activity
             android:name="com.velocityappsdj.repeatingtimer.ui.MainActivity"
+            android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -23,7 +25,7 @@
         </activity>
         <service
             android:name="com.velocityappsdj.repeatingtimer.services.TimerService"
-            android:foregroundServiceType="dataSync"
+            android:foregroundServiceType="mediaPlayback"
             android:icon="@drawable/ic_baseline_timer_24" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

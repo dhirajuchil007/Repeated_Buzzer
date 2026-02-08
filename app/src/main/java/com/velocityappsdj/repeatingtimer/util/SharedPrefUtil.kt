@@ -26,4 +26,12 @@ class SharedPrefUtil(val context: Context) {
 
     fun getInterval(): Long = sharedPref.getLong("interval", 30L)
 
+    fun saveRingSound(ringSound: String) {
+        val editor = sharedPref.edit()
+        editor.putString("ring_sound", ringSound)
+        editor.apply()
+    }
+
+    fun getRingSound(): String = sharedPref.getString("ring_sound", RingSound.CHIME.displayName) ?: RingSound.CHIME.displayName
+
 }

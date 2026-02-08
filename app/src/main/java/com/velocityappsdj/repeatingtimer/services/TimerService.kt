@@ -26,6 +26,7 @@ import com.velocityappsdj.repeatingtimer.util.Constants.UNIT_MINUTES
 import com.velocityappsdj.repeatingtimer.util.Constants.UNIT_SECONDS
 import com.velocityappsdj.repeatingtimer.ui.MainActivity
 import com.velocityappsdj.repeatingtimer.R
+import com.velocityappsdj.repeatingtimer.util.RingSound
 import com.velocityappsdj.repeatingtimer.util.TimeFormatUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +53,7 @@ class TimerService : LifecycleService() {
     override fun onCreate() {
         super.onCreate()
         postInitialValues()
-        mediaPlayer = MediaPlayer.create(this, R.raw.hour_chime);
+        // MediaPlayer will be initialized when we know which sound to play
     }
 
     private fun postInitialValues() {
@@ -103,11 +104,17 @@ class TimerService : LifecycleService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(notificationManager)
         }
+        val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
+        
         val pendingIntent = PendingIntent.getActivity(
             applicationContext,
             1,
             Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_UPDATE_CURRENT
+            pendingIntentFlags
         )
 
         val actionIntent = Intent(this, TimerService::class.java).apply {
@@ -122,7 +129,7 @@ class TimerService : LifecycleService() {
                 .setContentText("00:00:00")
                 .addAction(
                     R.drawable.ic_baseline_stop_circle_24, "Stop",
-                    PendingIntent.getService(this, 2, actionIntent, FLAG_UPDATE_CURRENT)
+                    PendingIntent.getService(this, 2, actionIntent, pendingIntentFlags)
                 )
                 .setContentIntent(pendingIntent)
 
@@ -175,11 +182,27 @@ class TimerService : LifecycleService() {
 
                     selectedUnit = it.getStringExtra(UNIT)
                     selectedInterval = it.getLongExtra(INTERVAL, 0L)
+                    
+                    // Get the selected ring sound and initialize MediaPlayer
+                    val ringSoundName = it.getStringExtra("RING_SOUND") ?: RingSound.CHIME.displayName
+                    val ringSound = RingSound.fromDisplayName(ringSoundName)
+                    
+                    // Release old MediaPlayer if it exists
+                    if (::mediaPlayer.isInitialized) {
+                        mediaPlayer.release()
+                    }
+                    
+                    // Create new MediaPlayer with selected sound
+                    mediaPlayer = MediaPlayer.create(this, ringSound.resourceId)
+                    
                     setUpBuzzer()
 
                 }
                 ACTION_STOP_SERVICE -> {
-
+                    // Release MediaPlayer when stopping
+                    if (::mediaPlayer.isInitialized) {
+                        mediaPlayer.release()
+                    }
                     postInitialValues()
                     stopForeground(true)
                     stopSelf()

@@ -67,6 +67,29 @@
         app:layout_constraintTop_toBottomOf="@+id/unitPick"
         app:layout_constraintVertical_bias="0.225" />
 
+    <TextView
+        android:id="@+id/tvRingSound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Ring Sound"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/spinnerRingSound"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinnerRingSound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:minWidth="200dp"
+        android:padding="12dp"
+        android:background="@drawable/spinner_background"
+        app:layout_constraintBottom_toTopOf="@+id/buttonStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Button
         android:id="@+id/buttonStart"
         android:layout_width="wrap_content"
