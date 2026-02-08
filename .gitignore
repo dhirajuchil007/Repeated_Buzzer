@@ -13,3 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# User-specific configurations
+/.idea/deploymentTargetDropDown.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/studiobot.xml
+/.idea/shelf/
+/.idea/tasks.xml
+/.idea/usage.statistics.xml

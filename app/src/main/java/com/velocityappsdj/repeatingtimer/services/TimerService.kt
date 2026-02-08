@@ -9,6 +9,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
 import android.os.Build
+import android.os.PowerManager
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -40,6 +41,9 @@ class TimerService : LifecycleService() {
     lateinit var currentNotificationBuilder: NotificationCompat.Builder
     lateinit var mediaPlayer: MediaPlayer
 
+    private var wakeLock: PowerManager.WakeLock? = null
+
+
     companion object {
         var totalTimeSeconds = 0L
         val totalTimeInSecondsLiveData = MutableLiveData<Long>()
@@ -54,6 +58,10 @@ class TimerService : LifecycleService() {
         super.onCreate()
         postInitialValues()
         // MediaPlayer will be initialized when we know which sound to play
+        
+        // Initialize PowerManager and WakeLock
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "RepeatedBuzzer:TimerWakeLock")
     }
 
     private fun postInitialValues() {
@@ -81,6 +89,15 @@ class TimerService : LifecycleService() {
         isRunning = true
         isRunningLiveData.postValue(true)
         timeStarted = System.currentTimeMillis()
+        
+        // Acquire WakeLock
+        wakeLock?.let {
+            if (!it.isHeld) {
+                it.acquire(TimeUnit.HOURS.toMillis(4)) // Acquire with a timeout of 4 hours just in case
+                Log.d(TAG, "WakeLock acquired")
+            }
+        }
+
         CoroutineScope(Dispatchers.Main).launch {
             while (isRunning) {
                 lastRecordedTime = System.currentTimeMillis() - timeStarted
@@ -206,6 +223,14 @@ class TimerService : LifecycleService() {
                     postInitialValues()
                     stopForeground(true)
                     stopSelf()
+                    
+                    // Release WakeLock
+                    wakeLock?.let {
+                        if (it.isHeld) {
+                            it.release()
+                            Log.d(TAG, "WakeLock released")
+                        }
+                    }
                 }
                 else -> {
                 }
@@ -236,5 +261,18 @@ class TimerService : LifecycleService() {
                 }
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::mediaPlayer.isInitialized) {
+            mediaPlayer.release()
+        }
+        wakeLock?.let {
+            if (it.isHeld) {
+                it.release()
+                Log.d(TAG, "WakeLock released in onDestroy")
+            }
+        }
     }
 }
