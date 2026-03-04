@@ -21,3 +21,12 @@ local.properties
 /.idea/shelf/
 /.idea/tasks.xml
 /.idea/usage.statistics.xml
+/
+
+# Built application files
+*.apk
+*.ap_
+*.aab
+
+# App level build directory
+/app/build/
