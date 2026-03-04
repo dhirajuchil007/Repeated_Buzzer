@@ -5,4 +5,11 @@
     <string name="start">start</string>
     <string name="stop">stop</string>
     <string name="_00_00_00">00:00:00</string>
+
+    <!-- Review Dialog Strings -->
+    <string name="review_dialog_title">Enjoying the app?</string>
+    <string name="review_dialog_message">Do you like Repeated Buzzer? If so, please take a moment to rate us on the Play Store! It really helps us grow.</string>
+    <string name="review_dialog_positive">Sure, I\'ll review!</string>
+    <string name="review_dialog_negative">Not now</string>
+    <string name="review_dialog_neutral">Never ask again</string>
 </resources>

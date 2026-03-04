@@ -289,6 +289,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun stopService() {
+        // Increment buzzer stop count and check if we should show review dialog
+        prefUtil.incrementBuzzerStopCount()
+        com.velocityappsdj.repeatingtimer.util.ReviewManager.checkAndShowReviewDialog(this, prefUtil)
+
         Intent(this@MainActivity, TimerService::class.java).also {
             it.action = ACTION_STOP_SERVICE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
