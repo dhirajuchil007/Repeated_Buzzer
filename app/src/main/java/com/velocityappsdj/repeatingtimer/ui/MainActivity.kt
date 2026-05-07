@@ -5,9 +5,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.DisplayMetrics
+
 import android.util.Log
-import android.view.Display
+
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -130,22 +130,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getAdSize(): AdSize {
-        // Step 2 - Determine the screen width (less decorations) to use for the ad width.
-        val outMetrics = DisplayMetrics()
+        val adWidth: Int
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val display = this.display
-            display?.getRealMetrics(outMetrics)
+            val windowMetrics = windowManager.currentWindowMetrics
+            val density = resources.displayMetrics.density
+            adWidth = (windowMetrics.bounds.width() / density).toInt()
         } else {
-            @Suppress("DEPRECATION")
-            val display: Display = windowManager.defaultDisplay
-            @Suppress("DEPRECATION")
-            display.getMetrics(outMetrics)
+            val displayMetrics = resources.displayMetrics
+            adWidth = (displayMetrics.widthPixels / displayMetrics.density).toInt()
         }
-        val widthPixels = outMetrics.widthPixels.toFloat()
-        val density = outMetrics.density
-        val adWidth = (widthPixels / density).toInt()
-
-        // Step 3 - Get adaptive ad size and return for setting on the ad view.
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
     }
 
@@ -318,7 +311,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
     }

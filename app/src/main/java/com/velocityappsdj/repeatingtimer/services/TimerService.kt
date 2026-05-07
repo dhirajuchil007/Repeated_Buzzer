@@ -221,7 +221,7 @@ class TimerService : LifecycleService() {
                         mediaPlayer.release()
                     }
                     postInitialValues()
-                    stopForeground(true)
+                    stopForeground(STOP_FOREGROUND_REMOVE)
                     stopSelf()
                     
                     // Release WakeLock
